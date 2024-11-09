@@ -2,6 +2,7 @@ const express= require('express');
 const router=express.Router()
 const User= require('../models/user');
 const { jwtauthMiddleware, generateJWT } = require('../jwt');
+const bcrypt= require('bcrypt')
 
 router.post('/signup', async(req,res)=>{
     
@@ -47,7 +48,7 @@ router.post('/login', async(req,res)=>{
         if(!user){
             return res.status(401).json({message: 'User not found'});
         }
-        if(password!=user.password){
+        if(!await user.comparePassword(password)){
             return res.status(401).json({message:'Incorrect password'});
         }
         const payload={
@@ -100,7 +101,7 @@ router.put('/profile/password', jwtauthMiddleware, async(req,res)=>{
         if (!user) {
             return res.status(401).json({ error: 'Invalid user' });
         }
-        if(currentPassword!=user.password){
+        if(!await user.comparePassword(currentPassword)){
             return res.status(401).json({ error: 'Invalid password' });
         }
 
