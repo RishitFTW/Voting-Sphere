@@ -120,7 +120,8 @@ router.get('/vote/count', async(req,res)=>{
         const voteCounts=candidates.map((data)=>{
             return {
                 party:data.party,
-                voteCount:data.voteCount
+                voteCount:data.voteCount,
+                id:data.id
             }
         })   
         

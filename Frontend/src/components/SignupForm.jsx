@@ -10,15 +10,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 export function SignupForm({ className, ...props }) {
+
+  const navigate= useNavigate();
 
   const [formData, setformData]= useState({
       email: "",
       name: "",
       age: "",
       address: "",
-      aadhar: "",
+      aadharCardNumber: "",
       role: "",
       password: "",
     }   
@@ -29,11 +32,34 @@ export function SignupForm({ className, ...props }) {
       setformData({...formData, [id]: value});
   }
 
-  const handleSubmit=(e)=>{
-      e.preventDefault();
-      console.log("Form data= ", formData)
-  }
-
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+    try {
+      const response = await fetch('http://localhost:4000/user/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData), 
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || 'Something went wrong'}`);
+        return;
+      }
+  
+      const responseData = await response.json();
+      alert('Sign up successful!'); 
+      console.log('Response:', responseData); 
+      navigate('/home');
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to sign up. Please try again later.');
+      
+    }
+  };
+  
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -81,9 +107,9 @@ export function SignupForm({ className, ...props }) {
 
             {/* Aadhar Card Field */}
             <div className="flex flex-col gap-2">
-              <Label htmlFor="aadhar">Aadhar Card</Label>
-              <Input id="aadhar" type="text" placeholder="12-digit Aadhar Number" required 
-                value={formData.aadhar}
+              <Label htmlFor="aadharCardNumber">Aadhar Card</Label>
+              <Input id="aadharCardNumber" type="text" placeholder="12-digit Aadhar Number" required 
+                value={formData.aadharCardNumber}
                 onChange={handleChange}                
               />
             </div>
@@ -101,8 +127,8 @@ export function SignupForm({ className, ...props }) {
                 <option value="" disabled selected>
                   Select Role
                 </option>
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
+                <option value="voter">voter</option>
+                <option value="admin">admin</option>
               </select>
             </div>
 

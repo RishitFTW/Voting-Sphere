@@ -4,38 +4,61 @@ const User= require('../models/user');
 const { jwtauthMiddleware, generateJWT } = require('../jwt');
 const bcrypt= require('bcrypt')
 
-router.post('/signup', async(req,res)=>{
-    
+router.post('/signup', async (req, res) => {
     try {
+        const data = req.body;
+        const checkRole = data.role;
 
-        const data= req.body;
-        const checkRole= data.role;
-        if(checkRole=='admin'){
-            const user= await User.findOne({role:'admin'});
-            if(user){
-                return res.status(403).json({message: 'Admin already exists'});
+        if (checkRole == 'admin') {
+            const user = await User.findOne({ role: 'admin' });
+
+            if (user) {
+                return res.status(403).json({ message: 'Admin already exists' });
             }
         }
-        const exist= await User.findOne({aadharCardNumber:data.aadharCardNumber})
-        if(exist){
-            return res.status(401).json({message:'User already exists'})
+        console.log("CHP1");
+
+        // Check if the Aadhar card number already exists
+        const exist = await User.findOne({ aadharCardNumber: data.aadharCardNumber });
+        console.log("CHP2");
+
+        if (exist) {
+            return res.status(401).json({ message: 'User already exists' });
         }
-        
-        const newUser= new User(data);
-        const response= await newUser.save();
-        
-        const payload={
-            id:response.id
+
+        console.log("CHP3");
+
+        // Log the data being saved to the database
+        console.log("Saving user:", data);
+
+        // Create a new user instance
+        const newUser = new User(data);
+        console.log("CHP4");
+
+        // Attempt to save the user
+        const response = await newUser.save();
+        console.log("CHP5");
+
+        // Ensure the response is not null or undefined
+        if (!response) {
+            console.log("Failed to save the user.");
+            return res.status(500).json({ message: 'Failed to save the user' });
         }
-    
-        const token= generateJWT(payload);
-    
-        res.status(200).json({token:token});
+
+        const payload = { id: response.id };
+        const token = generateJWT(payload);
+
+        res.status(200).json({
+            response: response,
+            token: token
+        });
 
     } catch (error) {
-        res.status(500).json({error: 'Internal server error'});
+        console.error("Error during signup:", error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-})
+});
+
 
 
 

@@ -13,20 +13,43 @@ import { useState } from "react";
 
 export function LoginForm({ className, ...props }) {
 
+  
+  const [ formData, setformData]= useState({
+    aadharCardNumber:"",
+    password:""
+  })
+
   const handleChange=(e)=>{
     const { id, value}= e.target
     setformData({...formData, [id]: value});
 }
 
-const handleSubmit=(e)=>{
+const handleSubmit=async(e)=>{
     e.preventDefault();
-    console.log("Form data= ", formData)
+    try {
+      const response= await fetch('http://localhost:4000/user/login',{
+        method:'POST',
+        headers:{
+          'Content-Type': 'application/json',
+        },
+        body:JSON.stringify(formData), 
+      })
+
+      if(!response.ok){
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || 'Something went wrong'}`);
+        return;        
+      }
+
+      const responseData= await response.json();
+      alert('Sign in successful!'); 
+      console.log('Response:', responseData); 
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to sign up. Please try again later.'); 
+    }
 }
   
-  const [ formData, setformData]= useState({
-    aadhar:"",
-    password:""
-  })
 
 
   return (
@@ -42,9 +65,9 @@ const handleSubmit=(e)=>{
 
             {/* Aadhar Card Field */}
             <div className="flex flex-col gap-2">
-              <Label htmlFor="aadhar">Aadhar Card</Label>
-              <Input id="aadhar" type="text" placeholder="12-digit Aadhar Number" required 
-                value={formData.aadhar}
+              <Label htmlFor="aadharCardNumber">Aadhar Card</Label>
+              <Input id="aadharCardNumber" type="text" placeholder="12-digit Aadhar Number" required 
+                value={formData.aadharCardNumber}
                 onChange={handleChange}
               />
             </div>
