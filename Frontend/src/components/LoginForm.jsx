@@ -10,9 +10,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 export function LoginForm({ className, ...props }) {
 
+  const navigate= useNavigate();
   
   const [ formData, setformData]= useState({
     aadharCardNumber:"",
@@ -40,9 +42,12 @@ const handleSubmit=async(e)=>{
         alert(`Error: ${errorData.error || 'Something went wrong'}`);
         return;        
       }
-
+     
       const responseData= await response.json();
+      localStorage.setItem('authToken', responseData.token);
+      console.log(responseData.token);
       alert('Sign in successful!'); 
+      navigate('/home')
       console.log('Response:', responseData); 
     } catch (error) {
       console.error('Error:', error);

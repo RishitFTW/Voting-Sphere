@@ -50,6 +50,7 @@ export function SignupForm({ className, ...props }) {
       }
   
       const responseData = await response.json();
+      localStorage.setItem('authToken', responseData.token);
       alert('Sign up successful!'); 
       console.log('Response:', responseData); 
       navigate('/home');
