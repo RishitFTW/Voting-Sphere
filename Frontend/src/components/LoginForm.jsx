@@ -94,7 +94,7 @@ const handleSubmit=async(e)=>{
             {/* Footer */}
             <div className="mt-4 text-center text-sm text-gray-500">
               Dont have an account?{" "}
-              <a href="/" className="text-blue-500 underline hover:text-blue-700">
+              <a href="/signup" className="text-blue-500 underline hover:text-blue-700">
                 SignUp
               </a>
             </div>
