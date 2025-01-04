@@ -1,68 +1,116 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 
-const AdminPanel = () => {
+const AdminPanel = ({admin}) => {
   const [sliderIndex, setSliderIndex] = useState(0);
-  const [parties, setParties] = useState([
-    {
-      _id: "1",
-      name: "Democratic Alliance",
-      symbol: "🌟",
-      leader: "John Doe",
-      foundedYear: 1990,
-    },
-    {
-      _id: "2",
-      name: "United Front",
-      symbol: "🕊️",
-      leader: "Jane Smith",
-      foundedYear: 1985,
-    },
-    {
-      _id: "3",
-      name: "People's Party",
-      symbol: "🔥",
-      leader: "Alice Johnson",
-      foundedYear: 2000,
-    },
-  ]);
+  const [parties, setParties] = useState([]);
+  const [formData, setformData] = useState({});
+  const [ reload, setReload]= useState(0);
+  const navigate= useNavigate();
 
-  // Fetch all parties from the backend
+
   useEffect(() => {
     const fetchParties = async () => {
       try {
-        const response = await fetch("/api/parties");
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          navigate('/signup');
+          return;
+        }
+        if(!admin){
+          navigate('/home');
+        }
+        // const tokenResponse = await fetch('http://localhost:4000/user/profile', {
+        //   method: 'GET',
+        //   headers: {
+        //     'Authorization': `Bearer ${token}`,
+        //     'Content-Type': 'application/json',
+        //   },
+        // });
+        // const tokenData= await tokenResponse.json();
+        // if(tokenData.data.role!=='admin'){
+        //   navigate('/home');
+        //   return;
+        // }
+        const response = await fetch("http://localhost:4000/candidate/");
         if (!response.ok) {
-          throw new Error("Failed to fetch parties");
+          const errorData = await response.json();
+          alert(`Error: ${errorData.error || "Something went wrong"}`);
+          return;
         }
         const data = await response.json();
-        setParties(data);
+        console.log(data.CANDIDATES);
+        setParties(data.CANDIDATES);
       } catch (error) {
         console.error("Error fetching parties:", error);
       }
     };
 
     fetchParties();
-  }, []);
+  }, [reload]);
+
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setformData({ ...formData, [id]: value });
+  };
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    const { id, ...dataWithoutId } = formData;
+    try {
+      
+      const method = sliderIndex === 0 ? "POST" : "PUT";
+      const URL =
+        sliderIndex === 0
+          ? "http://localhost:4000/candidate/"
+          : `http://localhost:4000/candidate/${formData.id}`;
+
+          const response= await fetch(URL,{
+            method,
+            headers:{
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(sliderIndex === 0 ? dataWithoutId : formData),
+          })
+
+          if(!response.ok){
+            const errorData= await response.json();
+            alert(`Error: ${errorData.error || "Something went wrong"}`);
+            return;
+          }
+          alert("Party created/updated successfully!");
+          setformData({});
+          setReload(prev=prev+1);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to create/update party');
+    }
+  };
+
+  // Fetch all parties from the backend
+
 
   const moveSlider = (index) => {
     setSliderIndex(index);
   };
 
   // Handle delete party
-  const deleteParty = (id) => {
-    // Replace with your API endpoint for deleting a party
-    fetch(`/api/parties/${id}`, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        if (response.ok) {
-          setParties((prev) => prev.filter((party) => party._id !== id));
-          alert("Party deleted successfully");
-        } else {
-          alert("Failed to delete the party");
-        }
-      })
-      .catch((error) => console.error("Error deleting party:", error));
+  const deleteParty = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:4000/candidate/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setParties((prev) => prev.filter((party) => party._id !== id));
+        alert("Party deleted successfully");
+      } else {
+        alert("Failed to delete the party");
+      }
+    } catch (error) {
+      console.error("Error deleting party:", error);
+    }
   };
 
   return (
@@ -89,7 +137,7 @@ const AdminPanel = () => {
             } hover:bg-yellow-500 text-white px-6 py-2 rounded-full font-semibold`}
             onClick={() => moveSlider(1)}
           >
-            Update Party
+            Delete Party
           </button>
           <button
             className={`${
@@ -97,7 +145,7 @@ const AdminPanel = () => {
             } hover:bg-red-500 text-white px-6 py-2 rounded-full font-semibold`}
             onClick={() => moveSlider(2)}
           >
-            Delete Party
+            Update Party
           </button>
         </div>
 
@@ -108,65 +156,44 @@ const AdminPanel = () => {
               <h2 className="text-xl font-semibold text-white mb-4">
                 Create a New Party
               </h2>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
-                  <label
-                    htmlFor="createName"
-                    className="block text-gray-300 mb-1"
-                  >
+                  <label htmlFor="party" className="block text-gray-300 mb-1">
                     Party Name
                   </label>
                   <input
                     type="text"
-                    id="createName"
+                    id="party"
                     className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none"
                     placeholder="Enter party name"
                     required
+                    onChange={handleChange}
                   />
                 </div>
                 <div>
-                  <label
-                    htmlFor="createSymbol"
-                    className="block text-gray-300 mb-1"
-                  >
-                    Party Symbol
-                  </label>
-                  <input
-                    type="text"
-                    id="createSymbol"
-                    className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none"
-                    placeholder="Enter party symbol"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="createLeader"
-                    className="block text-gray-300 mb-1"
-                  >
+                  <label htmlFor="name" className="block text-gray-300 mb-1">
                     Party Leader
                   </label>
                   <input
                     type="text"
-                    id="createLeader"
+                    id="name"
                     className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none"
                     placeholder="Enter leader's name"
                     required
+                    onChange={handleChange}
                   />
                 </div>
                 <div>
-                  <label
-                    htmlFor="createYear"
-                    className="block text-gray-300 mb-1"
-                  >
-                    Founded Year
+                  <label htmlFor="age" className="block text-gray-300 mb-1">
+                    Leader Age
                   </label>
                   <input
                     type="number"
-                    id="createYear"
+                    id="age"
                     className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none"
-                    placeholder="Enter founded year"
+                    placeholder="Enter leader age"
                     required
+                    onChange={handleChange}
                   />
                 </div>
                 <button
@@ -182,7 +209,7 @@ const AdminPanel = () => {
           {sliderIndex === 1 && (
             <div>
               <h2 className="text-xl font-semibold text-white mb-4">
-                Update and Delete Parties
+                Delete Parties
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {parties.map((party) => (
@@ -191,16 +218,10 @@ const AdminPanel = () => {
                     className="bg-gray-700 p-4 rounded-lg shadow-lg space-y-2"
                   >
                     <h3 className="text-lg font-semibold text-white">
-                      {party.name}
+                      {party.party}
                     </h3>
                     <p className="text-sm text-gray-400">
-                      Symbol: {party.symbol}
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      Leader: {party.leader}
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      Founded Year: {party.foundedYear}
+                      Leader: {party.name}
                     </p>
                     <button
                       onClick={() => deleteParty(party._id)}
@@ -217,29 +238,66 @@ const AdminPanel = () => {
           {sliderIndex === 2 && (
             <div>
               <h2 className="text-xl font-semibold text-white mb-4">
-                Delete Party by ID
+                Update the Party
               </h2>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
-                  <label
-                    htmlFor="deleteId"
-                    className="block text-gray-300 mb-1"
-                  >
+                  <label htmlFor="party" className="block text-gray-300 mb-1">
+                    Party Name
+                  </label>
+                  <input
+                    type="text"
+                    id="party"
+                    className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none"
+                    placeholder="Enter party name"
+                    required
+                    onChange={handleChange}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="name" className="block text-gray-300 mb-1">
+                    Party Leader
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none"
+                    placeholder="Enter leader's name"
+                    required
+                    onChange={handleChange}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="age" className="block text-gray-300 mb-1">
+                    Leader Age
+                  </label>
+                  <input
+                    type="number"
+                    id="age"
+                    className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none"
+                    placeholder="Enter leader age"
+                    required
+                    onChange={handleChange}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="id" className="block text-gray-300 mb-1">
                     Party ID
                   </label>
                   <input
                     type="text"
-                    id="deleteId"
+                    id="id"
                     className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none"
-                    placeholder="Enter party ID"
+                    placeholder="Enter Party id"
                     required
+                    onChange={handleChange}
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-red-600 hover:bg-red-500 text-white py-2 rounded font-semibold transition duration-300"
+                  className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded font-semibold transition duration-300"
                 >
-                  Delete Party
+                  Update Party
                 </button>
               </form>
             </div>

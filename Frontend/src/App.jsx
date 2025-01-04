@@ -6,15 +6,15 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import Profile from './appComponents/Profile';
 import Navbar from './appComponents/Navbar';
 import Leaderboards from './appComponents/Leaderboards';
-import { Home } from 'lucide-react';
 import Adminpanel from './appComponents/Adminpanel';
+import Home from './appComponents/Home';
 
 
 
 
 function App() {
 
-
+  const [ Admin, setAdmin ]= useState(false);
   return (
     <BrowserRouter>
     <Navbar/>
@@ -22,9 +22,9 @@ function App() {
         <Route path="/Leaderboards" element={<Leaderboards/>} /> 
         <Route path="/signup" element={<Signup/>} />
         <Route path="/login" element={<Login/>} />
-        <Route path="/profile" element={<Profile/>} />
+        <Route path="/profile" element={<Profile admin={Admin} setAdmin={setAdmin}/>} />
         <Route path="/home" element={<Home/>} />
-        <Route path="/Admin" element={<Adminpanel/>} />
+        <Route path="/Admin" element={<Adminpanel admin={Admin} />} />
 
       </Routes>
     </BrowserRouter>

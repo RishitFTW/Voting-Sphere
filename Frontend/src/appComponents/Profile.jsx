@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
-const Profile = () => {
+const Profile = ({admin, setAdmin}) => {
+  const navigate=useNavigate();
   const [UserInfo, setUserInfo] = useState({
 
   });
@@ -10,7 +12,7 @@ const Profile = () => {
        try {
         const token = localStorage.getItem('authToken');
         if (!token) {
-          alert('No authentication token found');
+          navigate('/signup');
           return;
         }
 
@@ -29,6 +31,9 @@ const Profile = () => {
 
         const responseData= await response.json();
         console.log(responseData);
+        if(responseData.data.role==='admin'){
+          admin=true;
+        }
         setUserInfo(responseData.data);
 
        } catch (error) {
