@@ -21,7 +21,7 @@ const AdminPanel = ({admin}) => {
           navigate('/home');
         }
 
-        const response = await fetch("http://localhost:4000/candidate/");
+        const response = await fetch("https://voting-app-backend-a9eb.onrender.com/candidate/");
         if (!response.ok) {
           const errorData = await response.json();
           alert(`Error: ${errorData.message || "Something went wrong"}`);
@@ -52,8 +52,8 @@ const AdminPanel = ({admin}) => {
       const method = sliderIndex === 0 ? "POST" : "PUT";
       const URL =
         sliderIndex === 0
-          ? "http://localhost:4000/candidate/"
-          : `http://localhost:4000/candidate/${formData.id}`;
+          ? "https://voting-app-backend-a9eb.onrender.com/candidate/"
+          : `https://voting-app-backend-a9eb.onrender.com/candidate/${formData.id}`;
 
           const response= await fetch(URL,{
             method,
@@ -90,7 +90,7 @@ const AdminPanel = ({admin}) => {
   const deleteParty = async (id) => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`http://localhost:4000/candidate/${id}`, {
+      const response = await fetch(`https://voting-app-backend-a9eb.onrender.com/candidate/${id}`, {
         method: "DELETE",
         headers:{
           'Authorization': `Bearer ${token}`,

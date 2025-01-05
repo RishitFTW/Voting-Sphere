@@ -29,7 +29,7 @@ export function LoginForm({ className, ...props }) {
 const handleSubmit=async(e)=>{
     e.preventDefault();
     try {
-      const response= await fetch('http://localhost:4000/user/login',{
+      const response= await fetch('https://voting-app-backend-a9eb.onrender.com/user/login',{
         method:'POST',
         headers:{
           'Content-Type': 'application/json',

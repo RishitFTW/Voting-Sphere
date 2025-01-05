@@ -17,7 +17,7 @@ const Profile = () => {
           return;
         }
 
-        const response = await fetch('http://localhost:4000/user/profile', {
+        const response = await fetch('https://voting-app-backend-a9eb.onrender.com/user/profile', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -51,7 +51,7 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:4000/user/profile/password', {
+      const response = await fetch('https://voting-app-backend-a9eb.onrender.com/user/profile/password', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

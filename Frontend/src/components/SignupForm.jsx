@@ -35,7 +35,7 @@ export function SignupForm({ className, ...props }) {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
     try {
-      const response = await fetch('http://localhost:4000/user/signup', {
+      const response = await fetch('https://voting-app-backend-a9eb.onrender.com/user/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

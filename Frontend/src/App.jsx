@@ -21,7 +21,7 @@ function App() {
           return; 
         }
         const tokenResponse = await fetch(
-          "http://localhost:4000/user/profile",
+          "https://voting-app-backend-a9eb.onrender.com/user/profile",
           {
             method: "GET",
             headers: {

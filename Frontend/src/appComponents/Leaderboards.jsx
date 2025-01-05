@@ -16,7 +16,7 @@ function Leaderboards() {
     const voteData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:4000/candidate/vote/count"
+          "https://voting-app-backend-a9eb.onrender.com/candidate/vote/count"
         );
         if (!response.ok) {
           const errorData = await response.json();
@@ -41,7 +41,7 @@ function Leaderboards() {
       }
 
       const response = await fetch(
-        `http://localhost:4000/candidate/vote/${candidateID}`,
+        `https://voting-app-backend-a9eb.onrender.com/candidate/vote/${candidateID}`,
         {
           method: "POST",
           headers: {
