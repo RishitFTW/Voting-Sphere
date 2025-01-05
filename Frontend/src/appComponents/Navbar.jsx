@@ -25,7 +25,7 @@ function Navbar() {
             {/* Home Button */}
             <button
               className={`text-white px-4 py-2 rounded-lg text-md font-semibold transition duration-300 transform ${isActive('/home')}`}
-              onClick={() => navigate('/home')}
+              onClick={() => navigate('/')}
             >
               Home
             </button>

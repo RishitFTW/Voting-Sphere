@@ -53,7 +53,7 @@ export function SignupForm({ className, ...props }) {
       localStorage.setItem('authToken', responseData.token);
       alert('Sign up successful!'); 
       console.log('Response:', responseData); 
-      navigate('/home');
+      navigate('/');
     } catch (error) {
       console.error('Error:', error);
       alert('Failed to sign up. Please try again later.');

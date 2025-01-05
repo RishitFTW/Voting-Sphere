@@ -18,7 +18,7 @@ const AdminPanel = ({admin}) => {
           return;
         }
         if(!admin){
-          navigate('/home');
+          navigate('/');
         }
 
         const response = await fetch("https://voting-app-backend-a9eb.onrender.com/candidate/");

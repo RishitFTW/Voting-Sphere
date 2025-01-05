@@ -47,7 +47,7 @@ const handleSubmit=async(e)=>{
       localStorage.setItem('authToken', responseData.token);
       console.log(responseData.token);
       alert('Sign in successful!'); 
-      navigate('/home')
+      navigate('/')
       console.log('Response:', responseData); 
     } catch (error) {
       console.error('Error:', error);

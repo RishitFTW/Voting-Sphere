@@ -49,7 +49,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/Admin" element={<Adminpanel admin={Admin} />} />
       </Routes>
     </BrowserRouter>
