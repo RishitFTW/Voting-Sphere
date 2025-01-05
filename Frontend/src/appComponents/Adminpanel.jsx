@@ -20,22 +20,11 @@ const AdminPanel = ({admin}) => {
         if(!admin){
           navigate('/home');
         }
-        // const tokenResponse = await fetch('http://localhost:4000/user/profile', {
-        //   method: 'GET',
-        //   headers: {
-        //     'Authorization': `Bearer ${token}`,
-        //     'Content-Type': 'application/json',
-        //   },
-        // });
-        // const tokenData= await tokenResponse.json();
-        // if(tokenData.data.role!=='admin'){
-        //   navigate('/home');
-        //   return;
-        // }
+
         const response = await fetch("http://localhost:4000/candidate/");
         if (!response.ok) {
           const errorData = await response.json();
-          alert(`Error: ${errorData.error || "Something went wrong"}`);
+          alert(`Error: ${errorData.message || "Something went wrong"}`);
           return;
         }
         const data = await response.json();
@@ -59,7 +48,7 @@ const AdminPanel = ({admin}) => {
     e.preventDefault();
     const { id, ...dataWithoutId } = formData;
     try {
-      
+      const token = localStorage.getItem('authToken');
       const method = sliderIndex === 0 ? "POST" : "PUT";
       const URL =
         sliderIndex === 0
@@ -69,6 +58,7 @@ const AdminPanel = ({admin}) => {
           const response= await fetch(URL,{
             method,
             headers:{
+              'Authorization': `Bearer ${token}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify(sliderIndex === 0 ? dataWithoutId : formData),
@@ -76,12 +66,13 @@ const AdminPanel = ({admin}) => {
 
           if(!response.ok){
             const errorData= await response.json();
-            alert(`Error: ${errorData.error || "Something went wrong"}`);
+            alert(`Error: ${errorData.message || "Something went wrong"}`);
             return;
           }
-          alert("Party created/updated successfully!");
+          const responseData= await response.json();
+          alert(`Meassage: ${responseData.message || "Something went wrong"}`);
           setformData({});
-          setReload(prev=prev+1);
+          setReload((prev) => prev + 1);
     } catch (error) {
       console.error('Error:', error);
       alert('Failed to create/update party');
@@ -98,15 +89,20 @@ const AdminPanel = ({admin}) => {
   // Handle delete party
   const deleteParty = async (id) => {
     try {
+      const token = localStorage.getItem('authToken');
       const response = await fetch(`http://localhost:4000/candidate/${id}`, {
         method: "DELETE",
+        headers:{
+          'Authorization': `Bearer ${token}`,
+        }
       });
 
       if (response.ok) {
         setParties((prev) => prev.filter((party) => party._id !== id));
         alert("Party deleted successfully");
       } else {
-        alert("Failed to delete the party");
+        const errorData= await response.json();
+        alert(`Error: ${errorData.message || "Something went wrong"}`);
       }
     } catch (error) {
       console.error("Error deleting party:", error);
@@ -218,10 +214,10 @@ const AdminPanel = ({admin}) => {
                     className="bg-gray-700 p-4 rounded-lg shadow-lg space-y-2"
                   >
                     <h3 className="text-lg font-semibold text-white">
-                      {party.party}
+                      {party.name}
                     </h3>
                     <p className="text-sm text-gray-400">
-                      Leader: {party.name}
+                      Leader: {party.party}
                     </p>
                     <button
                       onClick={() => deleteParty(party._id)}

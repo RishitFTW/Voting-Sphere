@@ -3,12 +3,14 @@ import { useNavigate } from "react-router";
 
 function Leaderboards() {
   const navigate = useNavigate();
-
   const [Parties, setParties] = useState([]);
-
   const [Reload, setReload] = useState(0);
 
-  const sortedResponse = [...Parties].sort((a, b) => b.voteCount - a.voteCount);
+  const sortedResponse = [...Parties].sort((a, b) => {
+    if (b.voteCount > a.voteCount) return 1;
+    if (b.voteCount < a.voteCount) return -1;
+    return 0;
+  });
 
   useEffect(() => {
     const voteData = async () => {
@@ -22,10 +24,9 @@ function Leaderboards() {
           return;
         }
         const responseData = await response.json();
-        console.log(responseData.response);
         setParties(responseData.response);
       } catch (error) {
-        console.log("parties data return nhi hua");
+        console.log("Parties data not returned");
       }
     };
     voteData();
@@ -34,6 +35,10 @@ function Leaderboards() {
   const handleVote = async (candidateID) => {
     try {
       const token = localStorage.getItem("authToken");
+      if(!token){
+        alert('You are not authorized to vote');
+        return;
+      }
 
       const response = await fetch(
         `http://localhost:4000/candidate/vote/${candidateID}`,
@@ -48,13 +53,12 @@ function Leaderboards() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        alert(`Error: ${errorData.error || "Something went wrong"}`);
+        alert(`Error: ${errorData.message || "Something went wrong"}`);
         return;
       }
 
       const responseData = await response.json();
-      console.log(responseData.message);
-      alert(`Message: ${responseData.message || "voted successfully"}`);
+      alert(`Message: ${responseData.message || "Voted successfully"}`);
       setReload((prevReload) => prevReload + 1);
     } catch (error) {
       console.error("Error:", error);
@@ -62,22 +66,41 @@ function Leaderboards() {
     }
   };
 
+  // Function to get rank color
+  const getRankColor = (index) => {
+    switch (index) {
+      case 0:
+        return "bg-gradient-to-r from-yellow-400 to-yellow-600"; // Gold
+      case 1:
+        return "bg-gradient-to-r from-gray-300 to-gray-400"; // Silver
+      case 2:
+        return "bg-gradient-to-r from-yellow-700 to-yellow-800"; // Bronze
+      default:
+        return "bg-gradient-to-r from-gray-600 to-gray-700"; // Others
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
-
-
-      {/* Voting App Content */}
-      <div className="flex justify-center items-center py-12">
-        <div className="flex flex-col space-y-8 max-w-xl mx-auto">
-          {/* Render cards dynamically */}
-          {sortedResponse.map((item) => (
+      <div className="flex justify-center items-center py-8">
+        <div className="w-full max-w-5xl mx-4">
+          {sortedResponse.map((item, index) => (
             <div
               key={item.id}
-              className="max-w-sm rounded-lg overflow-hidden shadow-2xl bg-gradient-to-r from-gray-700 via-gray-800 to-black p-6 transform transition duration-300 hover:scale-105"
+              className="w-full rounded-lg overflow-hidden shadow-lg bg-gradient-to-r from-gray-700 via-gray-800 to-black p-2 transform transition duration-300 hover:scale-105 mb-3"
             >
-              <div className="flex items-center space-x-6">
+              <div className="flex items-center">
+                {/* New Rank Section */}
+                <div className="flex-none w-16 flex items-center justify-center">
+                  <div className={`flex items-center justify-center w-10 h-10 rounded-lg transform -rotate-12 ${getRankColor(index)} shadow-lg`}>
+                    <div className="transform rotate-12 text-white font-bold text-lg">
+                      #{index + 1}
+                    </div>
+                  </div>
+                </div>
+
                 {/* Profile Picture Section */}
-                <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-xl">
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-sm">
                   <img
                     className="w-full h-full object-cover"
                     src="/images/DP.png"
@@ -86,19 +109,20 @@ function Leaderboards() {
                 </div>
 
                 {/* Party Name and Vote Count */}
-                <div className="flex flex-col justify-center text-white">
-                  <div className="text-2xl font-bold mb-2">Bhartiya Janta Party</div>
-                  <p className="text-lg font-medium">
+                <div className="flex flex-col justify-center text-white ml-3">
+                  <div className="text-sm font-semibold mb-1">{item.party}</div>
+                  <p className="text-xs">
                     <span className="text-yellow-300">Votes:</span>{" "}
-                    <span className="font-semibold">{item.voteCount}</span>
+                    <span className="font-bold">{item.voteCount}</span>
                   </p>
                 </div>
-              </div>
 
-              {/* Footer Section */}
-              <div className="flex justify-end p-4">
+                {/* Spacer */}
+                <div className="flex-grow"></div>
+
+                {/* Vote Button */}
                 <button
-                  className="px-6 py-2 text-white bg-gray-700 hover:bg-gray-600 rounded-lg shadow-md focus:outline-none transform transition duration-200 hover:scale-105"
+                  className="px-3 py-1 text-white bg-gray-700 hover:bg-gray-600 rounded-lg shadow-sm focus:outline-none transform transition duration-200 hover:scale-105"
                   onClick={() => {
                     handleVote(item.id);
                   }}

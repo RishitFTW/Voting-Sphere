@@ -135,7 +135,7 @@ router.get('/vote/count', async(req,res)=>{
 
 router.get('/', async(req,res)=>{
     try {
-        const candidates= await Candidate.find({}, 'name party  -_id');
+        const candidates= await Candidate.find({}, 'name party _id');
         if(!candidates){
             return res.status(400).json({message: 'No candidates exist'});
         }

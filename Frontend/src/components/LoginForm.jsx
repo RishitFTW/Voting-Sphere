@@ -39,7 +39,7 @@ const handleSubmit=async(e)=>{
 
       if(!response.ok){
         const errorData = await response.json();
-        alert(`Error: ${errorData.error || 'Something went wrong'}`);
+        alert("Wrong Credentials");
         return;        
       }
      
