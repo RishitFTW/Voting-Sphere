@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
-export function LoginForm({ className, ...props }) {
+export function LoginForm({ className, setAdmin, ...props }) {
 
   const navigate= useNavigate();
   
@@ -46,6 +46,7 @@ const handleSubmit=async(e)=>{
       const responseData= await response.json();
       localStorage.setItem('authToken', responseData.token);
       navigate('/')
+      window.location.reload()
     } catch (error) {
       console.error('Error:', error);
       alert('Failed to sign up. Please try again later.'); 
@@ -55,6 +56,8 @@ const handleSubmit=async(e)=>{
 
 
   return (
+    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-gray-300">
+      <div className="w-full max-w-sm">
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
@@ -101,6 +104,8 @@ const handleSubmit=async(e)=>{
           </form>
         </CardContent>
       </Card>
+    </div>
+    </div>
     </div>
   );
 }

@@ -1,26 +1,48 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 
-const AdminPanel = ({admin}) => {
+const AdminPanel = () => {
   const [sliderIndex, setSliderIndex] = useState(0);
   const [parties, setParties] = useState([]);
   const [formData, setformData] = useState({});
   const [ reload, setReload]= useState(0);
   const navigate= useNavigate();
 
+  // useEffect(()=>{
+  //   const checkAdmin=async()=>{
+  //     try {
+  //       const token = localStorage.getItem('authToken');
+  //       if (!token) {
+  //         navigate('/signup');
+  //         return;
+  //       }
+
+  //       const tokenResponse = await fetch(
+  //         "http://localhost:4000/user/profile",
+  //         {
+  //           method: "GET",
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
+  //       const tokenData = await tokenResponse.json();
+  //       console.log("message:", tokenData);
+  //       if (tokenData.data.role !== "admin") {
+  //         navigate('/');
+  //         return;
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching parties:", error);
+  //     }
+  //   }
+  //   checkAdmin();
+  // },[]);
 
   useEffect(() => {
     const fetchParties = async () => {
       try {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-          navigate('/signup');
-          return;
-        }
-        if(!admin){
-          navigate('/');
-        }
-
         const response = await fetch("https://voting-app-backend-a9eb.onrender.com/candidate/");
         if (!response.ok) {
           const errorData = await response.json();
