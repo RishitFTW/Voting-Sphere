@@ -28,7 +28,6 @@ const AdminPanel = ({admin}) => {
           return;
         }
         const data = await response.json();
-        console.log(data.CANDIDATES);
         setParties(data.CANDIDATES);
       } catch (error) {
         console.error("Error fetching parties:", error);

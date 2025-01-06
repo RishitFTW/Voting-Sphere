@@ -39,16 +39,13 @@ const handleSubmit=async(e)=>{
 
       if(!response.ok){
         const errorData = await response.json();
-        alert("Wrong Credentials");
+        alert(`Error: ${errorData.error || "Something went wrong"}`);
         return;        
       }
      
       const responseData= await response.json();
       localStorage.setItem('authToken', responseData.token);
-      console.log(responseData.token);
-      alert('Sign in successful!'); 
       navigate('/')
-      console.log('Response:', responseData); 
     } catch (error) {
       console.error('Error:', error);
       alert('Failed to sign up. Please try again later.'); 
@@ -94,9 +91,12 @@ const handleSubmit=async(e)=>{
             {/* Footer */}
             <div className="mt-4 text-center text-sm text-gray-500">
               Dont have an account?{" "}
-              <a href="/signup" className="text-blue-500 underline hover:text-blue-700">
+              <span
+                onClick={() => navigate("/signup")}
+                className="text-blue-500 underline hover:text-blue-700 cursor-pointer"
+              >
                 SignUp
-              </a>
+              </span>
             </div>
           </form>
         </CardContent>
