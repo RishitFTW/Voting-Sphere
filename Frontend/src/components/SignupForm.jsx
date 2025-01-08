@@ -47,6 +47,7 @@ export function SignupForm({ className, ...props }) {
       if (!response.ok) {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || "Something went wrong"}`);
+        window.location.reload()
         return;
       }
 
