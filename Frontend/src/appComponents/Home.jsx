@@ -1,4 +1,5 @@
 import React from 'react'
+import { NavLink } from 'react-router'
 
 function Home() {
   return (
@@ -7,7 +8,12 @@ function Home() {
   <section class="bg-gray-900 text-white text-center py-24">
     <h1 class="text-4xl font-bold mb-4">Welcome to the Voting App</h1>
     <p class="text-xl mb-6">A secure and easy way to participate in elections online.</p>
-    <a href="/leaderboards" class="bg-white text-gray-900 px-6 py-3 rounded-full text-lg font-semibold hover:bg-blue-100">Get Started</a>
+    <NavLink
+      to="/leaderboards"
+      className="bg-white text-gray-900 px-6 py-3 rounded-full text-lg font-semibold hover:bg-blue-100"
+    >
+      Get Started
+    </NavLink>
   </section>
 
 {/*  <!-- About Section --> */}
