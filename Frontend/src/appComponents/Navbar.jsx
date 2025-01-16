@@ -53,6 +53,7 @@ function Navbar({admin}) {
                 onClick={() => {
                   localStorage.removeItem('authToken');
                   navigate('/login');
+                  window.location.reload()
                 }}
               >
                 Logout
@@ -60,7 +61,10 @@ function Navbar({admin}) {
             ) : (
               <button
                 className={`text-white px-4 py-2 rounded-lg text-md font-semibold transition duration-300 transform ${isActive('/login')}`}
-                onClick={() => navigate('/login')}
+                onClick={() => {
+                  navigate('/login')
+                }}
+                
               >
                 Login
               </button>
@@ -69,7 +73,9 @@ function Navbar({admin}) {
             {/* Profile Button */}
             <button
               className={`text-white px-4 py-2 rounded-lg text-md font-semibold transition duration-300 transform ${isActive('/profile')}`}
-              onClick={() => navigate('/profile')}
+              onClick={() => {
+                navigate('/profile')
+              }}
             >
               Profile
             </button>
