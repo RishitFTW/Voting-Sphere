@@ -52,7 +52,7 @@ function Navbar({admin}) {
                 className={`text-white px-4 py-2 rounded-lg text-md font-semibold transition duration-300 transform ${isActive('/login')}`}
                 onClick={() => {
                   localStorage.removeItem('authToken');
-                  navigate('/login');
+                  navigate('/');
                   window.location.reload()
                 }}
               >
